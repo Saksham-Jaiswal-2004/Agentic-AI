@@ -1,4 +1,4 @@
-# Agentic AI — Tutorial
+# Agentic AI - Tutorial
 
 A structured repository containing my notes, code, diagrams, and experiments while learning **Agentic AI** from a single comprehensive course.
 
