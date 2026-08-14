@@ -145,8 +145,8 @@ Agentic-AI-One-Shot/
 
 # Progress
 
-- [ ] LangChain
-- [ ] LangGraph
+- [x] LangChain
+- [x] LangGraph
 - [ ] RAG
 - [ ] Vectorless RAG
 - [ ] Deep Agents
