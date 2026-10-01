@@ -1,96 +1,197 @@
-# Agentic AI - Tutorial
+# Agentic AI
 
-A structured repository containing my notes, code, diagrams, and experiments while learning **Agentic AI** from a single comprehensive course.
+My notes and hands-on code from working through the **Agentic AI One Shot Course**, covering the modern LLM application stack end to end: LangChain, LangGraph, RAG (with and without vectors), Deep Agents, Guardrails, LLM Evaluation, and LLM Gateways.
 
-The goal of this repository is to document my learning journey and build a strong foundation in modern AI engineering concepts including **LangChain, LangGraph, RAG, Agents, Guardrails, LLM Evaluation, and AI Infrastructure**.
+Each module pairs a long-form `notes.md` (roughly 2,500 to 4,200 lines each) with runnable Jupyter notebooks or Python scripts. Most examples run on **Groq** (`llama-3.3-70b-versatile`, `openai/gpt-oss-120b`), so you can follow along on the free tier.
+
+**Course video:** [Agentic AI One Shot Course](https://www.youtube.com/watch?v=rV3HJ4LEZ7k&t=382s)
 
 ---
 
-## Course
+## Modules
 
-**Video:** Agentic AI One Shot Course
+| # | Module | What's inside | Code |
+|---|--------|---------------|------|
+| 01 | [LangChain](01.%20LangChain/) | Agents, model integration, tools, messages, structured output, middlewares, guardrails | 7 notebooks + LLM gateway notebook |
+| 02 | [LangGraph](02.%20LangGraph/) | State graphs, ReAct agents, memory, streaming, human-in-the-loop, MCP | 2 notebooks + MCP client/servers |
+| 03 | [RAG](03.%20RAG/) | Ingestion, chunking, embeddings, ChromaDB and FAISS vector stores, retrieval pipelines, RAG evaluation | 3 notebooks + modular `src/` pipeline |
+| 04 | [Vectorless RAG](04.%20Vectorless%20RAG/) | Reasoning-based retrieval with PageIndex tree search, so no embeddings and no chunking | 1 notebook |
+| 05 | [Deep Agents](05.%20Deep%20Agents/) | Planning, todos, a virtual filesystem, subagents, and custom system prompts with `deepagents` | 1 notebook |
+| 06 | [Guardrails](06.%20Guardrails/) | Input, output, tool, RAG, and PII guardrails, risk levels, and HITL patterns | Notes (code is in `01. LangChain/LangChain/07. GuardRails.ipynb`) |
+| 07 | [LLM Evaluation](07.%20LLM%20Evaluation/) | Offline and online evals, datasets, LLM-as-a-judge, rubrics, and judge biases | Notes (code is in `03. RAG/rag_evaluation.ipynb`) |
+| 08 | [LLM Gateways](08.%20LLM%20Gateways/) | Provider abstraction, routing strategies, fallbacks, retries, caching, and rate limiting | Notes (code is in `01. LangChain/llm_gateways.ipynb`) |
 
-https://www.youtube.com/watch?v=rV3HJ4LEZ7k&t=382s
+---
+
+## Highlights
+
+### 01 · LangChain
+- `create_agent` with custom tools, plus the tool execution loop
+- One interface over **OpenAI, Gemini, and Groq** through `init_chat_model`, with streaming and batching
+- `SystemMessage`, `HumanMessage`, `AIMessage`, and `ToolMessage`
+- Structured output with **Pydantic**, **TypedDict**, and **dataclasses**, including nested schemas
+- **Middlewares:** summarization (token-size and fraction triggers) and Human-in-the-Loop (approve, reject, edit)
+- **Guardrails:** deterministic and model-based checks, built-in `PIIMiddleware`, and custom `before_agent` and `after_agent` hooks
+
+### 02 · LangGraph
+- A chatbot built with the Graph API: `StateGraph`, nodes, edges, and `add_messages` reducers
+- Tool-calling chatbot using `ToolNode` and `tools_condition`, with Tavily web search
+- **ReAct agent** architecture (act, observe, reason)
+- Persistent memory with `MemorySaver` checkpointers, plus `stream()` and `astream()` modes
+- **Human-in-the-loop** with `interrupt` and `Command`
+- **MCP demo:** a `MultiServerMCPClient` agent that connects to a `stdio` math server and a `streamable-http` weather server
+
+### 03 · RAG
+- **Notebooks:** document loaders, PDF processing, `RecursiveCharacterTextSplitter`, `all-MiniLM-L6-v2` embeddings, a ChromaDB vector store, a retriever, and simple, advanced, and streaming RAG pipelines
+- **Modular pipeline (`src/`):**
+  - `data_loader.py` loads PDF, TXT, CSV, Excel, Word, and JSON files
+  - `embedding.py` handles chunking and SentenceTransformer embeddings
+  - `vectorstore.py` builds, saves, loads, and queries a FAISS index
+  - `search.py` retrieves context and summarizes it with Groq
+- **Evaluation:** LangSmith datasets and experiments, with LLM-as-a-judge evaluators for **correctness, relevance, groundedness, and retrieval relevance**
+
+### 04 · Vectorless RAG
+- Uploads a PDF ("Attention Is All You Need") to **PageIndex** and builds a hierarchical tree index
+- An **LLM tree search** reasons over section titles and summaries to choose nodes, instead of using embedding similarity
+- An end-to-end pipeline: tree search, then node retrieval, then a grounded answer
+
+### 05 · Deep Agents
+- Compares a basic agent with `create_deep_agent` on a research task
+- Built-in `write_todos` planning, a virtual filesystem, and subagent delegation
+- Custom system prompts and an internet search tool via Tavily
+
+### 06 to 08 · Guardrails, Evaluation, Gateways
+- **Guardrails:** a layered defense model, a tool permission model, least privilege, action risk levels 0 to 4, and handling prompt injection in retrieved documents
+- **Evaluation:** model, prompt, component, application, and agent-level evals, pairwise vs. pointwise judging, and rubric design
+- **Gateways (LiteLLM):** a unified `completion()` API, automatic fallbacks, cost tracking with `completion_cost`, response caching, smart routing with `Router`, and load balancing across API keys
 
 ---
 
 ## Repository Structure
 
 ```text
-Agentic-AI-One-Shot/
-│
-├── 1. LangChain/
-│   ├── Notes.md
-│   ├── Code/
-│   ├── Images/
-│   └── Resources.md
-│
-├── 2. LangGraph/
-│   ├── Notes.md
-│   ├── Code/
-│   ├── Images/
-│   └── Resources.md
-│
-├── 3. RAG/
-│   ├── Notes.md
-│   ├── Code/
-│   ├── Images/
-│   └── Resources.md
-│
-├── 4. Vectorless-RAG/
-│   ├── Notes.md
-│   ├── Code/
-│   ├── Images/
-│   └── Resources.md
-│
-├── 5. Deep-Agents/
-│   ├── Notes.md
-│   ├── Code/
-│   ├── Images/
-│   └── Resources.md
-│
-├── 6. Guardrails/
-│   ├── Notes.md
-│   ├── Code/
-│   ├── Images/
-│   └── Resources.md
-│
-├── 7. LLM-Evaluation/
-│   ├── Notes.md
-│   ├── Code/
-│   ├── Images/
-│   └── Resources.md
-│
-├── 8. LLM-Gateways/
-│   ├── Notes.md
-│   ├── Code/
-│   ├── Images/
-│   └── Resources.md
-│
-└── README.md
+Agentic-AI/
+├── 01. LangChain/
+│   ├── LangChain/              # 01. Intro … 07. GuardRails (notebooks)
+│   ├── llm_gateways.ipynb      # LiteLLM gateway demos
+│   ├── notes.md
+│   └── pyproject.toml
+├── 02. LangGraph/
+│   ├── 01. Basic ChatBot/
+│   ├── 02. Human Assistance/
+│   ├── 03. MCP Demo/           # client.py, mathserver.py, weather.py
+│   ├── notes.md
+│   └── pyproject.toml
+├── 03. RAG/
+│   ├── data/                   # sample PDFs and text files
+│   ├── notebook/               # data.ipynb, pdf_loader.ipynb
+│   ├── src/                    # data_loader, embedding, vectorstore, search
+│   ├── app.py
+│   ├── rag_evaluation.ipynb
+│   ├── notes.md
+│   └── pyproject.toml
+├── 04. Vectorless RAG/
+│   ├── data/attention.pdf
+│   ├── vectorless_rag.ipynb
+│   └── notes.md
+├── 05. Deep Agents/
+│   ├── deep_agents_basics.ipynb
+│   ├── notes.md
+│   └── pyproject.toml
+├── 06. Guardrails/notes.md
+├── 07. LLM Evaluation/notes.md
+└── 08. LLM Gateways/notes.md
 ```
 
 ---
 
-# Learning Roadmap
+## Tech Stack
 
-| Section | Topic |
-|---------|-------|
-| 1 | LangChain |
-| 2 | LangGraph |
-| 3 | Retrieval-Augmented Generation (RAG) |
-| 4 | Vectorless RAG |
-| 5 | Deep Agents |
-| 6 | Guardrails |
-| 7 | LLM Evaluation |
-| 8 | LLM Gateways |
+- **Frameworks:** LangChain, LangGraph, LangSmith, Deep Agents, LiteLLM, MCP (`FastMCP`, `langchain-mcp-adapters`)
+- **LLM providers:** Groq, OpenAI, Google Gemini
+- **Retrieval:** ChromaDB, FAISS, Sentence Transformers, HuggingFace Embeddings, PageIndex
+- **Document loading:** PyPDF, PyMuPDF, BeautifulSoup
+- **Tools:** Tavily Search
+- **Tooling:** Python 3.14, [uv](https://docs.astral.sh/uv/), Jupyter
 
 ---
 
-# Course Timeline
+## Getting Started
+
+Each module (01, 02, 03, and 05) is its own **uv** project with its own `pyproject.toml` and `uv.lock`.
+
+### 1. Clone
+
+```bash
+git clone https://github.com/Saksham-Jaiswal-2004/Agentic-AI.git
+cd Agentic-AI
+```
+
+### 2. Install a module's dependencies
+
+```bash
+cd "02. LangGraph"
+uv sync            # creates .venv from uv.lock
+```
+
+If you're not using uv, install from `requirements.txt` instead:
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate        # Windows
+# source .venv/bin/activate   # macOS/Linux
+pip install -r requirements.txt
+```
+
+### 3. Configure API keys
+
+Create a `.env` file in the module folder. It is gitignored, so it won't be committed. Add only the keys the module you're running needs:
+
+```env
+GROQ_API_KEY=...          # used almost everywhere
+OPENAI_API_KEY=...        # model integration, gateways
+GOOGLE_API_KEY=...        # Gemini (LangChain)
+GEMINI_API_KEY=...        # Gemini via LiteLLM
+TAVILY_API_KEY=...        # web search (LangGraph, Deep Agents)
+LANGSMITH_API_KEY=...     # tracing and evaluation
+LANGSMITH_TRACING=true
+PAGEINDEX_API_KEY=...     # Vectorless RAG
+```
+
+### 4. Run
+
+- **Notebooks:** open them in VS Code or Jupyter and select the module's `.venv` kernel.
+- **MCP demo:**
+  ```bash
+  cd "02. LangGraph/03. MCP Demo"
+  python weather.py      # terminal 1: HTTP MCP server on :8000
+  python client.py       # terminal 2: launches the math server over stdio and queries both
+  ```
+- **RAG pipeline:**
+  ```bash
+  cd "03. RAG"
+  python app.py          # builds or loads the FAISS index and answers a sample query
+  ```
+
+---
+
+## Progress
+
+- [x] LangChain
+- [x] LangGraph
+- [x] RAG
+- [x] Vectorless RAG
+- [x] Deep Agents
+- [x] Guardrails
+- [x] LLM Evaluation
+- [x] LLM Gateways
+
+---
+
+## Course Timeline
 
 | Timestamp | Topic |
-|-----------|------|
+|-----------|-------|
 | 00:00:00 | Introduction |
 | 00:02:31 | LangChain |
 | 02:35:12 | LangGraph |
@@ -103,66 +204,14 @@ Agentic-AI-One-Shot/
 
 ---
 
-# What You'll Find
+## References
 
-- Well-structured handwritten and digital notes
-- Concept explanations
-- Architecture diagrams
-- Code examples
-- Mini experiments
-- Practical implementations
-- Learning resources
-- Important interview concepts
-
----
-
-# Technologies Covered
-
-- Large Language Models (LLMs)
-- LangChain
-- LangGraph
-- Retrieval-Augmented Generation (RAG)
-- Vector Databases
-- Agentic AI
-- AI Workflows
-- Multi-Agent Systems
-- Tool Calling
-- Guardrails
-- LLM Evaluation
-- AI Gateways
-
----
-
-# Repository Goals
-
-- Learn modern Agentic AI concepts from scratch
-- Build a structured reference for future revision
-- Practice implementations alongside theory
-- Create a knowledge base for AI engineering interviews
-- Document my learning journey publicly
-
----
-
-# Progress
-
-- [x] LangChain
-- [x] LangGraph
-- [ ] RAG
-- [ ] Vectorless RAG
-- [ ] Deep Agents
-- [ ] Guardrails
-- [ ] LLM Evaluation
-- [ ] LLM Gateways
-
----
-
-# References
-
-- Agentic AI One Shot Course
-- Official documentation of the frameworks used throughout the course
+- [Agentic AI One Shot Course](https://www.youtube.com/watch?v=rV3HJ4LEZ7k&t=382s)
+- [LangChain docs](https://docs.langchain.com/) · [LangGraph docs](https://langchain-ai.github.io/langgraph/) · [LangSmith](https://docs.smith.langchain.com/)
+- [Deep Agents](https://github.com/langchain-ai/deepagents) · [LiteLLM](https://docs.litellm.ai/) · [PageIndex](https://pageindex.ai/) · [Model Context Protocol](https://modelcontextprotocol.io/)
 
 ---
 
 ## License
 
-This repository is intended for educational purposes and personal learning.
+For educational and personal learning purposes.
